@@ -1,0 +1,22 @@
+---
+# vars file for Hadoop
+NameNode_Format: "yes"
+hadoop_dir: "/etc/hadoop"
+jdk: "jdk.rpm"
+softwares: "/etc/softwares"
+NameNode_Port: 9000
+NameNode_IP: "{{  groups['MasterNode'][0]  }}"
+NameNode_Dir: "/NameNode"
+Replication_Factor: 1
+NameNodePorts:
+  - 50070
+  - 50470
+  - 8020
+  - 9000
+  - 50090
+UtilitySoftwares:
+  - tar
+  - vim
+  - wget
+  - make
+  - unzip
