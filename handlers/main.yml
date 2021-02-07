@@ -1,0 +1,4 @@
+---
+# handlers file for Hadoop
+- name: Run BashRC
+  shell: "source {{  ansible_env.HOME  }}/.bashrc"
