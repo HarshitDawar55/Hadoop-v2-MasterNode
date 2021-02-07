@@ -191,7 +191,6 @@
   loop: "{{ NameNodePorts }}"
 
 - name: Starting the NameNode!
-  tags: h
   block:
     - name: Starting the NameNode!
       command: hadoop-daemon.sh start namenode
@@ -199,7 +198,6 @@
     - command: clear
 
 - name: Starting the Yarn Services!
-  tags: h
   block:
     - name: Starting the Yarn Services!
       command: start-yarn.sh
