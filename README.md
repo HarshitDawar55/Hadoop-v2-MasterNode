@@ -11,13 +11,15 @@ Requirements
 ------------
 
 * Hotspot Java Version 8 is required. In this role, specifically java version jdk-8u271-linux-x64.rpm is used. It might be possible that, this version is not available now online.
-* Download any version of oracle/hotspot java version 8, place the file in the "files" folder in the role.
+* Download any version of oracle/hotspot java version 8, place the file in the "files" folder in the role. In this role, the folder is not present because it was empty, so it was not uploaded. Therefore, first of all create that folder & then place that jdk downloaded in this folder.
+* Remember to download that jdk that ends with **linux-x64**.  
 * The jdk name in the task named "Copying the Java Software!" should be replaced by the name of the jdk downloaded.
+* The group name of the systems that has to be configured for Master Node should be **"MasterNode"** in the Inventory File.
 
 Role Variables
 --------------
 
-**NameNode_Format** => This should be assigned to "no" when the NameNode is formatted for the first time. But as & when re-formatting is required, it can be again set to "yes". By default, it is set to "yes".
+**NameNode_Format** => This should be assigned to "no" when the NameNode is already been formatted for the first time. But as & when re-formatting is required, it can be again set to "yes". By default, it is set to "yes".
 <br />
 
 **softwares** => This is the directory where the JDK will be copied.
