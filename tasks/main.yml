@@ -29,7 +29,7 @@
 - name: Installing some utility softwares!
   package:
     name: "{{  item  }}"
-    state: latest
+    state: present
   loop: "{{ UtilitySoftwares  }}"
 
 - name: Creating the directory for Java software!
@@ -180,7 +180,7 @@
 
 - name: Formatting the NameNode!
   when: NameNode_Format == "yes"
-  shell: hadoop namenode -format -force
+  command: hadoop namenode -format -force
 
 - name: Editing Firewall Rules for NameNode!
   firewalld:
