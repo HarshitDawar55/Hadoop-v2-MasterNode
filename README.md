@@ -3,6 +3,7 @@ Hadoop-MasterNode
 
 * This Ansible Role is used to configure the Hadoop v2 MasterNode!
 * This role will be using the most stable version of Hadoop 2 i.e. Hadoop-2.10.1
+
 Requirements
 ------------
 
