@@ -195,11 +195,13 @@
     - name: Starting the NameNode!
       command: hadoop-daemon.sh start namenode
   rescue:
-    - command: clear
+    - name: Already Running!
+      command: clear
 
 - name: Starting the Yarn Services!
   block:
     - name: Starting the Yarn Services!
       command: start-yarn.sh
   rescue:
-    - command: clear
+    - name: Already Running!
+      command: clear
