@@ -3,11 +3,14 @@ Hadoop-MasterNode
 
 * This Ansible Role is used to configure the Hadoop v2 MasterNode!
 * This role will be using the most stable version of Hadoop 2 i.e. Hadoop-2.10.1
+* This role is used to configure Hadoop on **CentOS** based Linux Only.
 
 Requirements
 ------------
 
-Hotspot Java Version 8 is required.
+* Hotspot Java Version 8 is required. In this role, specifically java version jdk-8u271-linux-x64.rpm is used. It might be possible that, this version is not available now online.
+* Download any version of oracle/hotspot java version 8, place the file in the "files" folder in the role.
+* The jdk name in the task named "Copying the Java Software!" should be replaced by the name of the jdk downloaded.
 
 Role Variables
 --------------
@@ -59,6 +62,6 @@ Developed by Harshit Dawar, also known as Technologist, a public speaker, extrov
 
 **Twitter:** https://www.twitter.com/harshitdawar55
 
-**Medium:** https://www.medium.com/@harshitdawar
+**Medium:** https://harshitdawar.medium.com
 
 **GitHub:** https://www.github.com/harshitdawar55
