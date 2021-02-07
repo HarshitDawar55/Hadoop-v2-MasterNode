@@ -49,7 +49,7 @@ Including an example of how to use your role (for instance, with variables passe
 License
 -------
 
-MIT
+[MIT](https://github.com/HarshitDawar55/Hadoop-v2-MasterNode/blob/main/LICENSE)
 
 Author Information
 ------------------
