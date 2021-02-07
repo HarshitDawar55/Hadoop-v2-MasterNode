@@ -30,7 +30,7 @@ galaxy_info:
   platforms:
   - name: Linux
     versions:
-    - CentOS based
+    - CentOS
   #   - 25
   # - name: SomePlatform
   #   versions:
