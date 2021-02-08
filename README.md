@@ -17,7 +17,7 @@ Requirements
 
 **Very Important Changes in the code that needs to be done by the user!**
 * Whichever java you download, make sure to replace the name mentioned in the line number 42 of this code by the java package name you have downloaded.
-* Also, replace the exact version of the java version mentioned on line number 103 in the code by the exact version you have downloaded. For example, in the code, in line number 103, it is been written as "jdk1.8.0_271", now, if you have downloaded the package "jdk1.8.0_281-linux-x64.rpm", then replace the java version on line number 103 by "jdk1.8.0_281".  
+* Also, replace the exact version of the java version mentioned on line number 103 in the code by the exact version you have downloaded. For example, in the code, in line number 108, it is been written as "jdk1.8.0_271", now, if you have downloaded the package "jdk1.8.0_281-linux-x64.rpm", then replace the java version on line number 103 by "jdk1.8.0_281".  
 
 Role Variables
 --------------
