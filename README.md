@@ -1,4 +1,4 @@
-<img src = "https://img.shields.io/badge/version-1.0.1-brightgreen" />
+<img src = "https://img.shields.io/badge/version-1.1.1-brightgreen" />
 
 Hadoop-MasterNode
 =========
