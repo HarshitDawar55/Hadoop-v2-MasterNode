@@ -14,7 +14,10 @@ Requirements
 * Download any version of oracle/hotspot java version 8, place the file in the "files" folder in the role. In this role, the folder is not present because it was empty, so it was not uploaded. Therefore, first of all create that folder & then place that jdk downloaded in this folder.
 * Remember to download that jdk that ends with **linux-x64**.  
 * The jdk name in the task named "Copying the Java Software!" should be replaced by the name of the jdk downloaded.
-* The group name of the systems that has to be configured for Master Node should be **"MasterNode"** in the Inventory File.
+* The group name of the systems that has to be configured for Master Node should be **"MasterNode"** in the Inventory File (not required, if running this role on the localhost, in the case of running this role on the localhost, "localhost" keyword must be used while mentioning the hosts in the ansible-playbook).
+
+**Very Important Changes in the code that needs to be done by the user!**
+* 
 
 Role Variables
 --------------
