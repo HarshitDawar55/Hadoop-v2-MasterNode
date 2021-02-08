@@ -48,7 +48,7 @@
       command: java -version
   rescue:
     - name: Installing Java!
-      command: "rpm -ivh  {{ softwares }}/{{ jdk }} "
+      command: "yum localinstall  {{ softwares }}/{{ jdk }} "
 
 - name: Creating the Hadoop Installation Directory!
   file:
