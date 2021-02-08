@@ -48,7 +48,9 @@
       command: java -version
   rescue:
     - name: Installing Java!
-      command: "yum localinstall  {{ softwares }}/{{ jdk }} "
+      yum:
+        name: "{{ softwares }}/{{ jdk }} "
+        state: present
 
 - name: Creating the Hadoop Installation Directory!
   file:
