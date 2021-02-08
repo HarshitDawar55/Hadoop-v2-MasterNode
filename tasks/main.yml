@@ -96,6 +96,9 @@
       HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
   notify: Run BashRC
 
+- name: Calling the Handlers
+  meta: flush_handlers
+
 - name: Configuring JAVA HOME the hadoop-env.sh File!
   replace:
     path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadoop-env.sh"
