@@ -16,7 +16,7 @@ NameNodePorts:
   - 50090
 UtilitySoftwares:
   - tar
+  - ssh
   - vim
   - wget
-  - make
   - unzip
