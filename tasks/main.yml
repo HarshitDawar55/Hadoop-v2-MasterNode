@@ -32,181 +32,191 @@
     state: present
   loop: "{{ UtilitySoftwares  }}"
 
-- name: Creating the directory for Java software!
-  file:
-    path: "{{  softwares  }}"
-    state: directory
+- name: Adding Master HostNames in the /etc/hosts file!
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item }} Master{{ loop.index }}"
+  loop: "{{ groups['MasterNode'] }} "
 
-- name: Copying the Java Software!
-  copy:
-    src: files/jdk-8u271-linux-x64.rpm
-    dest: "{{ softwares }}/{{  jdk  }}"
-
-- name: Installing the Hotspot Java Software!
-  block:
-    - name: Checking Java Installation!
-      command: java -version
-  rescue:
-    - name: Installing Java!
-      yum:
-        name: "{{ softwares }}/{{ jdk }} "
-        state: present
-
-- name: Creating the Hadoop Installation Directory!
-  file:
-    path: "{{ hadoop_dir }}"
-    state: directory
-
-- name: Creating a Temp Directory for Downloading the Hadoop!
-  file:
-    path: /tempHadoop
-    state: directory
-
-- name: Downloading Hadoop-2.10.1 Stable software!
-  get_url:
-    url: "https://archive.apache.org/dist/hadoop/common/stable2/hadoop-2.10.1.tar.gz"
-    dest: "/tempHadoop/hadoop-2.10.1.tar.gz"
-
-- name: Installing Hadoop!
-  block:
-    - name: Checking Hadoop Installed or Not!
-      command: which hadoop
-  rescue:
-    - name: Checking Hadoop Extraction!
-      block:
-        - name: Block to Check Hadoop Extraction!
-          command: "ls {{  hadoop_dir  }}/hadoop-2.10.1"
-      rescue:
-        - name: Extracting Hadoop!
-          unarchive:
-            remote_src: yes
-            src: "/tempHadoop/hadoop-2.10.1.tar.gz"
-            dest: "{{  hadoop_dir  }}"
-
-- name: Configuring the Hadoop Environmental Variables!
-  blockinfile:
-    path: ~/.bashrc
-    block: |
-      HADOOP_HOME=/etc/hadoop/hadoop-2.10.1
-      HADOOP_INSTALL=$HADOOP_HOME
-      HADOOP_MAPRED_HOME=$HADOOP_HOME
-      HADOOP_COMMON_HOME=$HADOOP_HOME
-      HADOOP_HDFS_HOME=$HADOOP_HOME
-      YARN_HOME=$HADOOP_HOME
-      HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-      PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
-      HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
-  notify: Run BashRC
-
-- name: Calling the Handlers
-  meta: flush_handlers
-
-- name: Configuring JAVA HOME the hadoop-env.sh File!
-  replace:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadoop-env.sh"
-    regexp: 'export JAVA_HOME=\${JAVA_HOME}'
-    replace: export JAVA_HOME=${JAVA_HOME:-"/usr/java/jdk1.8.0_271-amd64"}
-
-
-- name: Configuring HADOOP CONF DIR the hadoop-env.sh File!
-  replace:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadoop-env.sh"
-    regexp: 'export HADOOP_CONF_DIR=\${HADOOP_CONF_DIR\:\-\"/etc/hadoop\"}'
-    replace: export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop/hadoop-2.10.1/etc/hadoop"}
-
-- name: Configuring NameNode IP!
-  blockinfile:
-    path: "{{  hadoop_dir  }}/hadoop-2.10.1/etc/hadoop/core-site.xml"
-    insertafter: "<configuration>"
-    block: |
-      <property>
-      <name>fs.defaultFS</name>
-      <value>hdfs://{{ ansible_facts['default_ipv4']['address']  }}:{{ NameNode_Port }}</value>
-      </property>
-
-      <property>
-      <name>hadoop.tmp.dir</name>
-      <value>{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadooptmpdata</value>
-      </property>
-
-- name: Creating the Temporary Directory!
-  file:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadooptmpdata"
-    state: directory
-
-- name: Creating the Hadoop Metadata Directory!
-  file:
-    path: "{{ NameNode_Dir }}"
-    state: directory
-
-- name: Configuring NameNode MetaData Directory in hdfs-site.xml!
-  blockinfile:
-    path: "{{  hadoop_dir  }}/hadoop-2.10.1/etc/hadoop/hdfs-site.xml"
-    insertafter: "<configuration>"
-    block: |
-      <property>
-      <name>dfs.replication</name>
-      <value>{{ Replication_Factor }}</value>
-      </property>
-
-      <property>
-      <name>dfs.name.dir</name>
-      <value>file://{{ NameNode_Dir }}</value>
-      </property>
-
-- name: Checking whether the normal mapred-site.xml file exists!
-  stat:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
-  register: Mapred_Status
-
-- name: Creating the new Mapred-site.xml File from the Template One!
-  when: Mapred_Status.stat.exists == false
-  command: "cp {{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml.template {{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
-
-- name: Editing the Mapred-site.xml for Yarn!
-  blockinfile:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
-    insertafter: "<configuration>"
-    block: |
-        <property>
-        <name>mapreduce.framework.name</name>
-        <value>yarn</value>
-        </property>
-
-- name: Editing the Yarn-site.xml!
-  blockinfile:
-    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/yarn-site.xml"
-    insertafter: "<configuration>"
-    block: |
-        <property>
-        <name>mapreduceyarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-        </property>
-
-- name: Formatting the NameNode!
-  when: NameNode_Format == "yes"
-  command: hadoop namenode -format -force
-
-- name: Editing Firewall Rules for NameNode!
-  firewalld:
-    port: "{{ item  }}/tcp"
-    immediate: yes
-    permanent: yes
-    state: enabled
-  loop: "{{ NameNodePorts }}"
-
-- name: Starting the NameNode!
-  block:
-    - name: Starting the NameNode!
-      command: hadoop-daemon.sh start namenode
-  rescue:
-    - name: Already Running!
-      command: clear
-
-- name: Starting the Yarn Services!
-  block:
-    - name: Starting the Yarn Services!
-      command: start-yarn.sh
-  rescue:
-    - name: Already Running!
-      command: clear
+#- name: Generating the SSH Key for MasterNode!
+#  openssh_keypair:
+#    path: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+#
+#- name: Creating the directory for Java software!
+#  file:
+#    path: "{{  softwares  }}"
+#    state: directory
+#
+#- name: Copying the Java Software!
+#  copy:
+#    src: files/jdk-8u271-linux-x64.rpm
+#    dest: "{{ softwares }}/{{  jdk  }}"
+#
+#- name: Installing the Hotspot Java Software!
+#  block:
+#    - name: Checking Java Installation!
+#      command: java -version
+#  rescue:
+#    - name: Installing Java!
+#      yum:
+#        name: "{{ softwares }}/{{ jdk }} "
+#        state: present
+#
+#- name: Creating the Hadoop Installation Directory!
+#  file:
+#    path: "{{ hadoop_dir }}"
+#    state: directory
+#
+#- name: Creating a Temp Directory for Downloading the Hadoop!
+#  file:
+#    path: /tempHadoop
+#    state: directory
+#
+#- name: Downloading Hadoop-2.10.1 Stable software!
+#  get_url:
+#    url: "https://archive.apache.org/dist/hadoop/common/stable2/hadoop-2.10.1.tar.gz"
+#    dest: "/tempHadoop/hadoop-2.10.1.tar.gz"
+#
+#- name: Installing Hadoop!
+#  block:
+#    - name: Checking Hadoop Installed or Not!
+#      command: which hadoop
+#  rescue:
+#    - name: Checking Hadoop Extraction!
+#      block:
+#        - name: Block to Check Hadoop Extraction!
+#          command: "ls {{  hadoop_dir  }}/hadoop-2.10.1"
+#      rescue:
+#        - name: Extracting Hadoop!
+#          unarchive:
+#            remote_src: yes
+#            src: "/tempHadoop/hadoop-2.10.1.tar.gz"
+#            dest: "{{  hadoop_dir  }}"
+#
+#- name: Configuring the Hadoop Environmental Variables!
+#  blockinfile:
+#    path: ~/.bashrc
+#    block: |
+#      HADOOP_HOME=/etc/hadoop/hadoop-2.10.1
+#      HADOOP_INSTALL=$HADOOP_HOME
+#      HADOOP_MAPRED_HOME=$HADOOP_HOME
+#      HADOOP_COMMON_HOME=$HADOOP_HOME
+#      HADOOP_HDFS_HOME=$HADOOP_HOME
+#      YARN_HOME=$HADOOP_HOME
+#      HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+#      PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+#      HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+#  notify: Run BashRC
+#
+#- name: Calling the Handlers
+#  meta: flush_handlers
+#
+#- name: Configuring JAVA HOME the hadoop-env.sh File!
+#  replace:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadoop-env.sh"
+#    regexp: 'export JAVA_HOME=\${JAVA_HOME}'
+#    replace: export JAVA_HOME=${JAVA_HOME:-"/usr/java/jdk1.8.0_271-amd64"}
+#
+#
+#- name: Configuring HADOOP CONF DIR the hadoop-env.sh File!
+#  replace:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadoop-env.sh"
+#    regexp: 'export HADOOP_CONF_DIR=\${HADOOP_CONF_DIR\:\-\"/etc/hadoop\"}'
+#    replace: export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop/hadoop-2.10.1/etc/hadoop"}
+#
+#- name: Configuring NameNode IP!
+#  blockinfile:
+#    path: "{{  hadoop_dir  }}/hadoop-2.10.1/etc/hadoop/core-site.xml"
+#    insertafter: "<configuration>"
+#    block: |
+#      <property>
+#      <name>fs.defaultFS</name>
+#      <value>hdfs://{{ ansible_facts['default_ipv4']['address']  }}:{{ NameNode_Port }}</value>
+#      </property>
+#
+#      <property>
+#      <name>hadoop.tmp.dir</name>
+#      <value>{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadooptmpdata</value>
+#      </property>
+#
+#- name: Creating the Temporary Directory!
+#  file:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/hadooptmpdata"
+#    state: directory
+#
+#- name: Creating the Hadoop Metadata Directory!
+#  file:
+#    path: "{{ NameNode_Dir }}"
+#    state: directory
+#
+#- name: Configuring NameNode MetaData Directory in hdfs-site.xml!
+#  blockinfile:
+#    path: "{{  hadoop_dir  }}/hadoop-2.10.1/etc/hadoop/hdfs-site.xml"
+#    insertafter: "<configuration>"
+#    block: |
+#      <property>
+#      <name>dfs.replication</name>
+#      <value>{{ Replication_Factor }}</value>
+#      </property>
+#
+#      <property>
+#      <name>dfs.name.dir</name>
+#      <value>file://{{ NameNode_Dir }}</value>
+#      </property>
+#
+#- name: Checking whether the normal mapred-site.xml file exists!
+#  stat:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
+#  register: Mapred_Status
+#
+#- name: Creating the new Mapred-site.xml File from the Template One!
+#  when: Mapred_Status.stat.exists == false
+#  command: "cp {{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml.template {{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
+#
+#- name: Editing the Mapred-site.xml for Yarn!
+#  blockinfile:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
+#    insertafter: "<configuration>"
+#    block: |
+#        <property>
+#        <name>mapreduce.framework.name</name>
+#        <value>yarn</value>
+#        </property>
+#
+#- name: Editing the Yarn-site.xml!
+#  blockinfile:
+#    path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/yarn-site.xml"
+#    insertafter: "<configuration>"
+#    block: |
+#        <property>
+#        <name>mapreduceyarn.nodemanager.aux-services</name>
+#        <value>mapreduce_shuffle</value>
+#        </property>
+#
+#- name: Formatting the NameNode!
+#  when: NameNode_Format == "yes"
+#  command: hadoop namenode -format -force
+#
+#- name: Editing Firewall Rules for NameNode!
+#  firewalld:
+#    port: "{{ item  }}/tcp"
+#    immediate: yes
+#    permanent: yes
+#    state: enabled
+#  loop: "{{ NameNodePorts }}"
+#
+#- name: Starting the NameNode!
+#  block:
+#    - name: Starting the NameNode!
+#      command: hadoop-daemon.sh start namenode
+#  rescue:
+#    - name: Already Running!
+#      command: clear
+#
+#- name: Starting the Yarn Services!
+#  block:
+#    - name: Starting the Yarn Services!
+#      command: start-yarn.sh
+#  rescue:
+#    - name: Already Running!
+#      command: clear
