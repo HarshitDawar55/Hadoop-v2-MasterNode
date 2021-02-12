@@ -40,7 +40,6 @@
     state: present
 
 - name: Adding DataNode HostNames in the /etc/hosts file!
-  tags: h
   lineinfile:
     path: "/etc/hosts"
     line: "{{ item }} DataNode{{ index + 1}}"
@@ -49,11 +48,20 @@
   loop_control:
     index_var: index
 
+- name: Generating the SSH Key for MasterNode!
+  openssh_keypair:
+    path: "{{ ansible_env.HOME }}/.ssh/id_rsa"
 
-#- name: Generating the SSH Key for MasterNode!
-#  openssh_keypair:
-#    path: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
-#
+# - name: Performing Passwordless Setup For Master!
+#   shell: ssh-copy-id -i ~/.ssh/id_rsa.pub root@Master
+
+# - name: Performing Passwordless Setup For DataNodes!
+#   tags: h
+#   shell: "ssh-copy-id -f ~/.ssh/id_rsa.pub root@DataNode{{ index + 1 }}"
+#   loop: "{{ DataNode_IP }}" 
+#   loop_control:
+#     index_var: index
+
 #- name: Creating the directory for Java software!
 #  file:
 #    path: "{{  softwares  }}"
