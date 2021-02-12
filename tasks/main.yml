@@ -31,12 +31,24 @@
     name: "{{  item  }}"
     state: present
   loop: "{{ UtilitySoftwares  }}"
+  ignore_errors: yes
 
-- name: Adding Master HostNames in the /etc/hosts file!
+- name: Adding MasterNode HostNames in the /etc/hosts file!
   lineinfile:
     path: /etc/hosts
-    line: "{{ item }} Master{{ loop.index }}"
-  loop: "{{ groups['MasterNode'] }} "
+    line: "{{NameNode_IP}} Master"
+    state: present
+
+- name: Adding DataNode HostNames in the /etc/hosts file!
+  tags: h
+  lineinfile:
+    path: "/etc/hosts"
+    line: "{{ item }} DataNode{{ index + 1}}"
+    state: present
+  loop: "{{ DataNode_IP }}"
+  loop_control:
+    index_var: index
+
 
 #- name: Generating the SSH Key for MasterNode!
 #  openssh_keypair:
