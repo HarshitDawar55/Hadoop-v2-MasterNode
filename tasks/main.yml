@@ -48,16 +48,25 @@
   loop_control:
     index_var: index
 
-- name: Generating the SSH Key for MasterNode!
-  openssh_keypair:
-    path: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+# - name: Generating the SSH Key for MasterNode!
+#   openssh_keypair:
+#     path: "{{ ansible_env.HOME }}/.ssh/id_rsa"
+
+# - name: Fetching the Private Key of the Master Node SSH!
+#   command: cat ~/.ssh/id_rsa
+#   register: Master_Private_Key
+#   tags: h
 
 # - name: Performing Passwordless Setup For Master!
-#   shell: ssh-copy-id -i ~/.ssh/id_rsa.pub root@Master
+#   tags: h
+#   authorized_key:
+#     user: root
+#     state: present
+#     key: "{{ Master_Private_Key.stdout }}"
 
 # - name: Performing Passwordless Setup For DataNodes!
 #   tags: h
-#   shell: "ssh-copy-id -f ~/.ssh/id_rsa.pub root@DataNode{{ index + 1 }}"
+#   shell: "echo {{ Master_Private_Key }} >> ~/.ssh/id_rsa.pub root@DataNode{{ index + 1 }}"
 #   loop: "{{ DataNode_IP }}" 
 #   loop_control:
 #     index_var: index
