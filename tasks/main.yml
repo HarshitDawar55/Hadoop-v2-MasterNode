@@ -42,7 +42,7 @@
 - name: Adding DataNode HostNames in the /etc/hosts file!
   lineinfile:
     path: "/etc/hosts"
-    line: "{{ item }} DataNode{{ index + 1}}"
+    line: "{{ item }} DataNode{{ index + 1 }}"
     state: present
   loop: "{{ DataNode_IP }}"
   loop_control:
