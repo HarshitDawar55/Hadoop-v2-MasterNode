@@ -7,6 +7,7 @@ softwares: "/etc/softwares"
 NameNode_Port: 9000
 NameNode_IP: "{{  groups['MasterNode'][0]  }}"
 NameNode_Dir: "/NameNode"
+DataNode_Dir: "/DataNode"
 Replication_Factor: 1
 DataNode_IP:
   - 192.168.99.111
@@ -16,6 +17,14 @@ NameNodePorts:
   - 8020
   - 9000
   - 50090
+  - 8025
+  - 8030
+  - 8040
+DataNodePorts:
+  - 50075
+  - 50475
+  - 50010
+  - 50020
 UtilitySoftwares:
   - tar
   - ssh
