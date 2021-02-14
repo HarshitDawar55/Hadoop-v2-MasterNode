@@ -73,7 +73,7 @@ Including an example of how to use your role (for instance, with variables passe
 
 Important Note
 ----------------
-* After the successful execution of this role, you will be able to access the Hadoop Dashboard by hitting the URL at <MasterNodeIP>:50070. This access is limited to the Multi Node setup that is been implemented locally. If cloud is been used, then the firewalls/security groups has to be configured accordingly, so that the Nodes can communicate with each other.
+* After the successful execution of this role, you will be able to access the Hadoop Dashboard by hitting the URL at **'MasterNodeIP:50070'**. This access is limited to the Multi Node setup that is been implemented locally. If cloud is been used, then the firewalls/security groups has to be configured accordingly, so that the Nodes can communicate with each other.
 
 * If the firewalld rules are not set, then hadoop cluster will fail since there is no communication between the nodes. But, do not worry in case you are implementing local cluster because this role will configure everything for you! 
 
