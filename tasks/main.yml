@@ -233,7 +233,7 @@
 - name: Editing the Slaves file!
   lineinfile:
     path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/slaves"
-    line: "DataNode{{ . index + 1  }}"
+    line: "DataNode{{ index + 1  }}"
     state: present
     create: yes
   loop: "{{ DataNode_IP }}"
