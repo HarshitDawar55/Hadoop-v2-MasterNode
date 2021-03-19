@@ -195,10 +195,25 @@
     path: "{{ hadoop_dir }}/hadoop-2.10.1/etc/hadoop/mapred-site.xml"
     insertafter: "<configuration>"
     block: |
-        <property>
-        <name>mapreduce.framework.name</name>
-        <value>yarn</value>
-        </property>
+      <property>
+      <name>yarn.app.mapreduce.am.env</name>
+      <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+      </property>
+
+      <property>
+      <name>mapreduce.map.env</name>
+      <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+      </property>
+      
+      <property>
+      <name>mapreduce.reduce.env</name>
+      <value>HADOOP_MAPRED_HOME=$HADOOP_HOME</value>
+      </property>
+    # block: |
+    #     <property>
+    #     <name>mapreduce.framework.name</name>
+    #     <value>yarn</value>
+    #     </property>
 
 - name: Editing the Yarn-site.xml!
   blockinfile:
